@@ -1,0 +1,25 @@
+{
+  "name": "swaglabs",
+  "version": "1.0.0",
+  "description": "test",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Afsanehrezaeinejad/SwagLabs.git"
+  },
+  "keywords": [
+    "1234"
+  ],
+  "author": "me",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Afsanehrezaeinejad/SwagLabs/issues"
+  },
+  "homepage": "https://github.com/Afsanehrezaeinejad/SwagLabs#readme",
+  "devDependencies": {
+    "cypress": "^14.4.1"
+  }
+}
