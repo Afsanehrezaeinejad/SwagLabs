@@ -17,4 +17,8 @@ describe('verify sorting',()=>{
         cy.get('[data-test="product-sort-container"]').select('Price (low to high)')
         cy.checkSortedByPrice(inventoryPageLocators.productPrice)
     })
+    it('should sort from most expensice to cheapest',()=>{
+        cy.get('[data-test="product-sort-container"]').select('Price (high to low)')
+        cy.checkSortedByPriceAsc(inventoryPageLocators.productPrice)
+    })
     })

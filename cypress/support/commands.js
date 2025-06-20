@@ -1,23 +1,52 @@
-Cypress.Commands.add('login', (user = 'standard' ) => {
+Cypress.Commands.add('login', (user = 'standard') => {
     cy.fixture('users').then((users)=>{
         const userData = users[user]
         cy.get('[data-test="username"]').type(userData.username)
         cy.get('[data-test="password"]').type(userData.password)
     })
     cy.get('[data-test="login-button"]').click()
-    cy.url().should('include', '/inventory.html')
   })
-  Cypress.Commands.add('addToCart', (...products) => {
-    const productList = products.flat()
-    productList.forEach((product) => {
-      cy.contains('[data-test="inventory-item-description"]', product)
-        .parents('.inventory_item')
-        .find('button')
-        .click()
-    })
-  })
+Cypress.Commands.add('logout',()=>{
+    cy.get('#react-burger-menu-btn').click()
+    cy.get('[data-test="logout-sidebar-link"]').click()
+})
+Cypress.Commands.add('addToCart', (...products) => {
+    const productList = products.flat();
   
-
+    productList.forEach((product) => {
+      cy.get('body').then(($body) => {
+        if ($body.find('[data-test="shopping-cart-badge"]').length) {
+          cy.get('[data-test="shopping-cart-badge"]')
+            .invoke('text')
+            .then((oldCount) => {
+              const oldBadgeCount = parseInt(oldCount.trim());
+  
+              cy.contains('[data-test="inventory-item-description"]', product)
+                .parents('.inventory_item')
+                .find('button')
+                .click();
+  
+              cy.get('[data-test="shopping-cart-badge"]')
+                .invoke('text')
+                .should((newCount) => {
+                  const newBadgeCount = parseInt(newCount.trim());
+                  expect(newBadgeCount).to.eq(oldBadgeCount + 1);
+                });
+            });
+        } else {
+          cy.contains('[data-test="inventory-item-description"]', product)
+            .parents('.inventory_item')
+            .find('button')
+            .click();
+  
+          cy.get('[data-test="shopping-cart-badge"]')
+            .invoke('text')
+            .should('eq', '1');
+        }
+      });
+    });
+  });
+  
 Cypress.Commands.add('checkout', () => {
     cy.get('[data-test="shopping-cart-link"]').click()
     cy.get('[data-test="inventory-item-price"]')
@@ -121,4 +150,16 @@ Cypress.Commands.add('checkSortedByPrice', (locator) => {
     })
   })
   
-  
+Cypress.Commands.add('checkSortedByPriceAsc',(locator)=>{
+    cy.get(locator).then((items)=>{
+        const price = [...items].map(el => parseFloat(el.innerText.replace('$', '').trim()))
+        const sorted = [...price].slice().sort((a,b)=> b - a)
+        expect(sorted).to.deep.equal(price)
+    })
+})
+Cypress.Commands.add('checkCartIsEmpty',()=>{
+    cy.get('[data-test="shopping-cart-badge"]').should('not.exist')
+    cy.get('[data-test="inventory-item-description"]').each(($el)=>{
+        cy.wrap($el).find('button').invoke('text').should('eq', 'Add to cart');
+    })
+})
